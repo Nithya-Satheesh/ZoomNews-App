@@ -16,19 +16,20 @@ export class News extends Component {
     category: PropTypes.string,
   };
 
-  constructor() {
-    super();
+  constructor(props) {
+    super(props);
     this.state = {
       articles: [],
       loading: false,
       page: 1,
     };
+    document.title = `ZoomNews - ${this.props.category}`;
   }
 
-  async updateNews() {
+  async componentDidMount() {
     this.setState({ loading: true });
     fetch(
-      `https://newsapi.org/v2/top-headlines?country = ${this.props.country}&category = ${this.props.category}&apiKey=db6a8a37f2ab4b5a8ff422027dc0a574&page=${this.state.page}&pageSize=${this.props.pageSize}`
+      `https://newsapi.org/v2/top-headlines?country=${this.props.country}&category=${this.props.category}&apiKey=ae004184b4c04471a8966dab9c640b48&page=${this.state.page}&pageSize=${this.props.pageSize}`
     )
       .then((response) => response.json())
       .then((data) => {
@@ -40,24 +41,60 @@ export class News extends Component {
       });
   }
 
-  async componentDidMount() {
-    this.updateNews();
-  }
-
   handlePreviousClick = () => {
-    this.setState({ page: this.state.page - 1 });
-    this.updateNews();
+    this.setState({ loading: true });
+    fetch(
+      `https://newsapi.org/v2/top-headlines?country=${
+        this.props.country
+      }&category=${
+        this.props.category
+      }&apiKey=ae004184b4c04471a8966dab9c640b48&page=${
+        this.state.page - 1
+      }&pageSize=${this.props.pageSize}`
+    )
+      .then((response) => response.json())
+      .then((data) => {
+        this.setState({
+          page: this.state.page - 1,
+          articles: data.articles,
+          loading: false,
+        });
+      });
   };
 
   handleNextClick = async () => {
-    this.setState({ page: this.state.page + 1 });
-    this.updateNews();
+    if (
+      !(
+        this.state.page + 1 >
+        Math.ceil(this.state.totalResults / this.props.pageSize)
+      )
+    ) {
+      this.setState({ loading: true });
+
+      fetch(
+        `https://newsapi.org/v2/top-headlines?country=${
+          this.props.country
+        }&category=${
+          this.props.category
+        }&apiKey=ae004184b4c04471a8966dab9c640b48&page=${
+          this.state.page + 1
+        }&pageSize=${this.props.pageSize}`
+      )
+        .then((response) => response.json())
+        .then((data) => {
+          this.setState({
+            page: this.state.page + 1,
+            articles: data.articles,
+            loading: false,
+          });
+        });
+    }
   };
   render() {
     return (
       <div className="container my-3">
         <h1 className="text-center" style={{ margin: "35px 0" }}>
-          Daily News - Top Headlines
+          Daily News - Top ${this.props.category} Headlines
         </h1>
         {this.state.loading && <Spinner />}
         <div className="row">
