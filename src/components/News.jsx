@@ -23,13 +23,18 @@ export class News extends Component {
       loading: false,
       page: 1,
     };
-    document.title = `ZoomNews - ${this.props.category}`;
+    document.title = `ZoomNews - ${this.capitalizeFirstLetter(
+      this.props.category
+    )}`;
   }
+  capitalizeFirstLetter = (string) => {
+    return string.charAt(0).toUpperCase() + string.slice(1);
+  };
 
   async componentDidMount() {
     this.setState({ loading: true });
     fetch(
-      `https://newsapi.org/v2/top-headlines?country=${this.props.country}&category=${this.props.category}&apiKey=ae004184b4c04471a8966dab9c640b48&page=${this.state.page}&pageSize=${this.props.pageSize}`
+      `https://newsapi.org/v2/top-headlines?country=${this.props.country}&category=${this.props.category}&apiKey=db6a8a37f2ab4b5a8ff422027dc0a574&page=${this.state.page}&pageSize=${this.props.pageSize}`
     )
       .then((response) => response.json())
       .then((data) => {
@@ -48,7 +53,7 @@ export class News extends Component {
         this.props.country
       }&category=${
         this.props.category
-      }&apiKey=ae004184b4c04471a8966dab9c640b48&page=${
+      }&apiKey=db6a8a37f2ab4b5a8ff422027dc0a574&page=${
         this.state.page - 1
       }&pageSize=${this.props.pageSize}`
     )
@@ -76,7 +81,7 @@ export class News extends Component {
           this.props.country
         }&category=${
           this.props.category
-        }&apiKey=ae004184b4c04471a8966dab9c640b48&page=${
+        }&apiKey=db6a8a37f2ab4b5a8ff422027dc0a574&page=${
           this.state.page + 1
         }&pageSize=${this.props.pageSize}`
       )
@@ -93,8 +98,9 @@ export class News extends Component {
   render() {
     return (
       <div className="container my-3">
-        <h1 className="text-center" style={{ margin: "35px 0" }}>
-          Daily News - Top ${this.props.category} Headlines
+        <h1 className="text-center" style={{ margin: "90px 0 35px 0" }}>
+          Daily News - Top {this.capitalizeFirstLetter(this.props.category)}{" "}
+          Headlines
         </h1>
         {this.state.loading && <Spinner />}
         <div className="row">
